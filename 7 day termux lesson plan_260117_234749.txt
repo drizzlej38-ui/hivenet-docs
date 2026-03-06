@@ -1,0 +1,59 @@
+┌─────────────────────────────────────────────┐
+│           Termux Micro-Plan (7 Days)       │
+└─────────────────────────────────────────────┘
+
+Day 1 – Navigating Directories
+- Open Termux
+- Learn to check current directory: `pwd`
+- List files: `ls` and `ls -l`
+- Move around: `cd ~/`, `cd ../`, `cd /storage`
+- Practice creating directories: `mkdir test`, `cd test`, `rmdir test`
+
+Day 2 – File Management
+- Create text files: `nano test.txt`
+- Write something, save (`Ctrl+O`) and exit (`Ctrl+X`)
+- Copy files: `cp test.txt test_copy.txt`
+- Move/rename: `mv test_copy.txt moved.txt`
+- Delete: `rm moved.txt`
+
+Day 3 – Permissions and Executables
+- Check file permissions: `ls -l`
+- Make scripts executable: `chmod +x runqwen`
+- Run scripts: `./runqwen` (from correct directory)
+- Understand differences: regular file vs executable
+
+Day 4 – Editing Basics
+- Practice nano shortcuts:
+  - Save: `Ctrl+O`
+  - Exit: `Ctrl+X`
+  - Cut line: `Ctrl+K`
+  - Paste: `Ctrl+U`
+  - Search: `Ctrl+W`
+- Open multiple files and navigate between them
+
+Day 5 – Running Commands
+- Learn difference between relative and absolute paths:
+  - Relative: `./script.sh`
+  - Absolute: `~/runqwen`
+- Run a command with options/flags: `ls -l /storage`
+- Check memory: `free -h`
+- Check processes: `top` or `htop` (install `pkg install htop`)
+
+Day 6 – Using Scripts for Qwen
+- Understand your `runqwen` launcher
+- Edit flags: context size, threads, batch size
+- Test interactive CLI: `./runqwen`
+- Practice safely stopping scripts (Ctrl+C)
+
+Day 7 – File Organization + Offline Practice
+- Organize your models and scripts in folders: `~/models`, `~/scripts`
+- Move text files between folders
+- Practice running `runqwen` with different inputs
+- Optional: create a text file with example prompts to feed Qwen
+- Reflect on what commands are familiar and which need practice
+
+Tips:
+- Always work in your home directory unless necessary
+- When offline, write notes in text files for reference
+- Use `pwd` frequently to avoid “No such file or directory” errors
+- Backup your scripts/models to SD card or cloud when possible

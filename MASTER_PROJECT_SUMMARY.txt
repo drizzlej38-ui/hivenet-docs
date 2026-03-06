@@ -1,0 +1,400 @@
+================================================================================
+MASTER PROJECT SUMMARY - FOR AI CONTEXT (CLAUDE, CHATGPT, QWEN)
+Last Updated: February 12, 2026
+Purpose: Give any AI full project context at session start
+Instructions: Paste this entire file at the start of every new AI session
+================================================================================
+
+================================================================================
+SECTION 1: THE CREATOR
+================================================================================
+
+USER PROFILE:
+- Limited coding experience, knows HTML basics
+- Currently learning Python (tutorial created this session)
+- Hardware: Samsung Galaxy Tab A9+ (primary), broken Tepin phone, access to
+  mom's devices
+- Works in Termux on Android
+- Limited/intermittent internet (camping periodically)
+- Must test offline using device hotspot when no WiFi available
+- Currently broke, no startup capital or assets
+- Works across multiple AI sessions (Claude, ChatGPT, Qwen)
+
+AI COLLABORATION MODEL:
+- Claude: Primary coding implementation, architecture, documentation
+- ChatGPT: Code review, architectural guidance, has memory across sessions
+- Qwen (local, in Termux): Offline/private work, secure development
+- Kimi k2: Agent swarm tasks (new addition, being evaluated)
+- User: Orchestrator and final decision maker across all AIs
+- Note: AIs cannot communicate directly. User bridges all sessions.
+  This master summary IS the communication layer between AIs.
+
+================================================================================
+SECTION 2: THE VISION - THE BIG PICTURE
+================================================================================
+
+CREATOR'S JOKE (that isn't really a joke):
+"The real-world creator of the real-world Skynet - except sovereignty,
+transparency, security, and mandatory human oversight are paramount."
+
+CORE PHILOSOPHY:
+- The more nodes that join, the faster EVERY device on the mesh becomes
+- Regardless of individual device processing power
+- Democratic AI infrastructure: a $50 phone contributes AND benefits equally
+- No central authority - decentralized
+- Human (creator's) oversight mandatory during development
+- Eventual community governance
+
+THE TWO HALVES OF THE PROJECT:
+
+--- HALF 1: HIVENET ---
+Distributed mesh computing network
+- Devices share processing power
+- Local, secure, offline-capable
+- Gets exponentially faster with more nodes
+- The "infrastructure layer"
+- Think: Bitcoin mining network but for AI compute, not currency
+
+--- HALF 2: OMNIVOICE ---
+Universal AI assistant, agent, and companion
+- Much more than shared compute
+- The "intelligence layer" / user-facing product
+- Ultimate goal: Universal assistant that orchestrates everything
+- Details still being defined (see Section 5)
+
+THE CONVERGENCE:
+When HiveNet + OmniVoice + agent swarm capabilities (like Kimi k2) combine:
+- Distributed reasoning across mesh
+- Swarm intelligence
+- Edge AI mesh networking
+- All running locally/privately
+- Potential: AI systems 100x faster than current single-instance AI
+- This is the "super speed capable AI systems" vision
+
+================================================================================
+SECTION 3: HIVENET - TECHNICAL STATE
+================================================================================
+
+CURRENT VERSION: v0.2 (Proof of Concept)
+
+WHAT WORKS:
+✅ Worker nodes announce themselves to coordinator
+✅ Coordinator tracks node IPs and status
+✅ Tasks can be sent from coordinator to workers
+✅ Workers process tasks and return results
+✅ Web UI displays nodes and task history
+✅ Works over local WiFi or device hotspot
+✅ Automated stress testing harness built
+
+CURRENT LIMITATIONS:
+❌ Single task per worker at a time (blocking)
+❌ No task queue
+❌ No authentication or security
+❌ No retry logic if task fails
+❌ No graceful handling of node disconnection
+❌ LAN-only (no internet routing)
+❌ Node IDs reset on restart (no persistence)
+
+TECHNICAL STACK:
+- Language: Python 3
+- Networking: Raw sockets (TCP)
+- UI: Web-based (HTML/CSS/JS)
+- Data: JSON messages, CSV logging
+- Dependencies: psutil, pandas
+
+FROZEN MESSAGE PROTOCOL (v0.2 - DO NOT CHANGE WITHOUT DISCUSSION):
+
+Node Announcement (Worker → Coordinator), Port 5000:
+{
+  "type": "node_announce",
+  "node_id": "abc12345",
+  "device_name": "MyPhone",
+  "platform": "Linux",
+  "stats": {
+    "cpu_percent": 15.2,
+    "memory_percent": 45.0,
+    "memory_available": 2048,
+    "temperature": 35.5
+  }
+}
+
+Task Dispatch (Coordinator → Worker), Port 5001:
+{
+  "type": "prime_simple|prime_standard|prime_complex",
+  "id": "task_timestamp"
+}
+
+Task Result (Worker → Coordinator), same connection:
+{
+  "task_id": "task_timestamp",
+  "node_id": "abc12345",
+  "status": "completed|failed",
+  "duration": 1.234,
+  "result_count": 1229,
+  "start_stats": { ... },
+  "end_stats": { ... },
+  "timestamp": "2026-01-09T12:34:56"
+}
+
+PROJECT FILES (v0.2):
+1. worker_node.py      - Runs on devices that process tasks
+2. coordinator.py      - Manages nodes, dispatches tasks, web UI
+3. test_harness.py     - Automated stress testing
+4. analyze_results.py  - Analyzes CSV test results
+
+================================================================================
+SECTION 4: STRESS TESTING PLAN (CURRENT PHASE)
+================================================================================
+
+STATUS: Planned, not yet executed
+Next action: Install Python + psutil on devices, then run tests in order
+
+TEST SEQUENCE:
+
+Test 1: BASELINE (15 min)
+Command: python test_harness.py --task prime_simple --delay 5 --log test1_baseline.csv
+Goal: Establish baseline, low stress
+
+Test 2: STANDARD LOAD (30 min)
+Command: python test_harness.py --task prime_standard --delay 3 --log test2_standard.csv
+Goal: Sustained moderate load
+
+Test 3: HEAVY LOAD (20 min)
+Command: python test_harness.py --task prime_complex --delay 2 --log test3_heavy.csv
+Goal: Push thermal/performance limits
+STOP if temp exceeds 60°C
+
+Test 4: MIXED WORKLOAD (30 min)
+Command: python test_harness.py --mixed --delay 4 --log test4_mixed.csv
+Goal: Variable load adaptability
+
+Test 5: RAPID FIRE (10 min)
+Command: python test_harness.py --task prime_standard --delay 1 --log test5_rapid.csv
+Goal: Maximum throughput breaking point
+
+Test 6: ENDURANCE (2-4 hours, overnight)
+Command: python test_harness.py --task prime_standard --delay 5 --log test6_endurance.csv
+Goal: Memory leaks, long-term stability
+
+AFTER TESTING:
+Run: python analyze_results.py
+Decision matrix based on results determines next dev priority.
+
+SAFETY RULES:
+- Stop if temp > 60°C
+- Stop if errors > 20%
+- Keep devices in open air
+- Don't leave unattended during heavy tests
+
+================================================================================
+SECTION 5: OMNIVOICE - CONCEPT STATE
+================================================================================
+
+STATUS: Vision defined, architecture not yet designed
+
+WHAT WE KNOW:
+- Universal AI assistant, agent, and companion
+- "Much more than the original shared compute idea"
+- Eventual convergence with HiveNet
+- The product that end users interact with
+- Will orchestrate multiple AI systems
+
+WHAT NEEDS DEFINITION:
+- Is it voice-controlled? Text? Both?
+- Does it RUN on HiveNet or CONTROL HiveNet?
+- Is it the coordinator layer for the mesh?
+- How does it relate to agent swarm capabilities (Kimi k2 model)?
+- Architecture for HiveNet ↔ OmniVoice communication
+
+KEY QUESTION FOR NEXT SESSION:
+"OmniVoice: does it send tasks TO HiveNet, or IS it the intelligence
+that lives ON HiveNet?"
+
+================================================================================
+SECTION 6: BUSINESS MODEL
+================================================================================
+
+CORE PRINCIPLE: Free public tier + commercial tiers = sustainable business
+
+THREE-TIER ARCHITECTURE:
+
+TIER 1: PUBLIC HIVENET (Free/Open Source)
+- Open source core protocol (AGPL license recommended)
+- Peer-to-peer mesh, anyone can join
+- Community governed
+- More nodes = everyone benefits
+- No direct revenue, but builds ecosystem and credibility
+- Your legacy contribution to humanity
+
+TIER 2: COMMERCIAL HIVENET ($$$)
+Target customers: AI companies, corporations, research labs, startups
+Options:
+  A) Cloud compute node farms (you run datacenters)
+  B) Virtual processor hosting on cloud servers
+  C) Hybrid: your nodes + partner infrastructure
+Pricing model:
+  - Small startup: $500-2k/month
+  - Mid company: $5k-50k/month  
+  - Enterprise: $100k+/month
+  - AI companies (training): $500k+/month
+Value proposition: Cheaper than AWS/Azure, purpose-built for distributed AI
+Commercial-only features: Guaranteed uptime, SLAs, priority routing,
+  advanced monitoring, compliance certs, support
+
+TIER 3: GOVERNMENT/MILITARY HIVENET ($$$$$)
+- Completely air-gapped from other tiers
+- Custom security hardening
+- Separate mesh for each:
+  * Government civilian (weather, research, census, healthcare)
+  * Defense/military (battlefield sim, intelligence, drone coordination)
+  * Critical infrastructure (power grid, financial, emergency response)
+- Contracts starting at $1M+ annually
+- FedRAMP, ITAR, and other compliance required
+
+BOOTSTRAP PATH (given zero capital):
+Stage 0 (Now, $0): Finish public HiveNet, open source it, build community
+Stage 1 (Month 3-4, ~$10-50k): Crowdfunding (Kickstarter/Indiegogo)
+Stage 2 (Month 6-9, ~$100-500k): Angel investment / VC
+Stage 3 (Month 9+): First commercial customers, revenue
+Alternative: Government grants (NSF, DARPA, DOE - non-dilutive)
+
+IP STRATEGY:
+- File provisional patent ASAP (~$150-300 DIY)
+  Establishes priority date, gives 12 months to file full patent
+- Trademark "HiveNet" and "OmniVoice" (~$250-350 each)
+  Do BEFORE going public
+- Dual license model:
+  Public: AGPL (forces derivatives open)
+  Commercial/Gov: Proprietary (you sell licenses)
+- Model: "Open Core" (like Red Hat/Linux, MongoDB, GitLab)
+
+================================================================================
+SECTION 7: DEVELOPMENT TOOLS & ENVIRONMENT
+================================================================================
+
+QWEN GUI (PLANNED - NOT YET BUILT):
+- Local web interface for Qwen running in Termux
+- Planned features:
+  * Chat interface with code syntax highlighting
+  * Model settings (temperature, context length, system prompt)
+  * Conversation history (saved locally)
+  * File upload for context
+  * Clean, minimal UI
+- Implementation: Python Flask/FastAPI backend + HTML/CSS/JS frontend
+- Access: localhost:8080, works with ANY browser
+  (Termux HTML viewer, Firefox, Bromite, etc.)
+- Status: Claude to build this - PENDING
+
+PYTHON LEARNING TUTORIAL:
+- Created this session
+- File: python_learning_tutorial.md
+- Teaches Python fundamentals using actual project code as examples
+- Covers: variables, functions, dicts, loops, classes, reading project code
+- Includes Termux command reference
+- Status: COMPLETE, delivered to user
+
+BROWSER RECOMMENDATION FOR TERMUX:
+- Any browser works for the web UI (pure HTML/JS/CSS)
+- Firefox for Android: Full extension support, privacy-focused
+- Bromite/Ungoogled Chromium: Chromium without Google
+- Termux HTML viewer: Lightweight, isolated, no extensions
+- User preference: Something isolated from Chrome/Tor, extension-capable
+
+================================================================================
+SECTION 8: KEY DECISIONS & FROZEN AGREEMENTS
+================================================================================
+
+FROZEN (Do not change without discussion):
+1. Message protocol v0.2 (see Section 3)
+2. Python as primary language
+3. Validation before features (test before building more)
+4. Data-driven development decisions
+
+AGREED APPROACH:
+- User orchestrates all AIs
+- Claude: implementation
+- ChatGPT: review and architecture
+- Qwen: offline/private work
+- No AI talks to another directly - user is the bridge
+- This master summary is the synchronization mechanism
+
+PHILOSOPHICAL COMMITMENTS:
+- Sovereignty: Users own their compute and data
+- Transparency: Open source core
+- Security: No compromises, especially before public release
+- Human oversight: Mandatory (creator's oversight during development)
+- Democratic access: Free public tier always exists
+- Network effect: More nodes = everyone benefits
+
+================================================================================
+SECTION 9: IMMEDIATE NEXT STEPS (PRIORITY ORDER)
+================================================================================
+
+TECHNICAL (This week):
+1. [ ] Install Python + psutil on all test devices
+2. [ ] Run stress tests 1-6 in order
+3. [ ] Run analyze_results.py on all CSV outputs
+4. [ ] Share results with Claude and ChatGPT for next phase decisions
+5. [ ] Claude to build Qwen GUI (pending user go-ahead)
+
+STRATEGIC (This month):
+1. [ ] Define OmniVoice architecture more precisely
+2. [ ] File provisional patent
+3. [ ] Trademark HiveNet and OmniVoice
+4. [ ] Choose open source license
+5. [ ] Design security model (on paper first)
+6. [ ] Write technical whitepaper draft
+
+LEARNING (Ongoing):
+1. [ ] Work through Python tutorial in Termux
+2. [ ] Read worker_node.py with tutorial as guide
+3. [ ] Make first small code modification (add debug print statement)
+4. [ ] Practice with Qwen offline for Python questions
+
+================================================================================
+SECTION 10: OPEN QUESTIONS (Need Decisions)
+================================================================================
+
+1. OmniVoice: Does it RUN on HiveNet or CONTROL HiveNet?
+2. Incentive model for public tier: Why do people share compute?
+   (reciprocity / reputation / altruism / token system?)
+3. Shareware vs patent+market vs hybrid strategy?
+4. Long-term governance: Founder control / community foundation / DAO?
+5. Timeline: How fast to move? Willing to spend months on security?
+6. Kimi k2 integration: How does agent swarm fit the architecture?
+7. OmniVoice: Voice-controlled? Text? Both? What does it actually DO?
+
+================================================================================
+SECTION 11: CONTEXT FOR SPECIFIC AIs
+================================================================================
+
+FOR CLAUDE:
+- You have no memory between sessions. This file IS your memory.
+- Previous Claude sessions contributed: v0.2 code, stress test plan,
+  analyze_results.py, python tutorial
+- You tend to be better at coding implementation than ChatGPT
+- User has limited paid access to you (no persistent memory feature)
+- Build Qwen GUI when user gives go-ahead
+- Always update this summary at end of major sessions
+
+FOR CHATGPT:
+- You have memory across sessions with this user
+- You contributed: architectural guidance, code review, stress test design
+- Cross-reference your memory with this file for full picture
+- You and Claude are complementary - Claude codes, you review
+- Update your memory with anything new in this file
+
+FOR QWEN (Local in Termux):
+- You run offline on the user's device
+- You're the secure, private option
+- User is learning Python - be patient and explain thoroughly
+- Focus on: answering Python questions, offline code review,
+  helping understand the project files
+- You cannot access internet - work only with what user provides
+- The project files are on the device in Termux
+
+================================================================================
+END OF MASTER SUMMARY
+Version: 2.0 | Created: February 12, 2026
+Next update: After stress test results are available
+================================================================================

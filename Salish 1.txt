@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salish Language Learning</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        const SalishConversationalApp = () => {
+          const [currentScene, setCurrentScene] = useState(0);
+          const [currentDialogue, setCurrentDialogue] = useState(0);
+          const [showTranslation, setShowTranslation] = useState(false);
+          const [responseMode, setResponseMode] = useState(false);
+          const [selectedResponse, setSelectedResponse] = useState(null);
+          const [completedScenes, setCompletedScenes] = useState([]);
+          const [practiceMode, setPracticeMode] = useState('listen');
+
+          // Icon components as simple SVGs
+          const VolumeIcon = () => (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            </svg>
+          );
+
+          const HomeIcon = () => (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+          );
+
+          const CoffeeIcon = () => (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
+              <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+              <line x1="6" y1="1" x2="6" y2="4"></line>
+              <line x1="10" y1="1" x2="10" y2="4"></line>
+              <line x1="14" y1="1" x2="14" y2="4"></line>
+            </svg>
+          );
+
+          const UsersIcon = () => (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+          );
+
+          const LightbulbIcon = () => (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M9 18h6"></path>
+              <path d="M10 22h4"></path>
+              <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"></path>
+            </svg>
+          );
+
+          const MessageIcon = () => (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+          );
+
+          const AwardIcon = () => (
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="8" r="7"></circle>
+              <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+            </svg>
+          );
+
+          const ChevronIcon = () => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          );
+
+          const scenes = [
+            {
+              title: "Morning Greetings at Home",
+              icon: <HomeIcon />,
+              context: "Starting your day with family",
+              dialogues: [
+                {
+                  speaker: "Elder",
+                  salish: "ʔəy̓ swəy̓qəʔ",
+                  pronunciation: "uh-EE swuy-QUH",
+                  english: "Good morning",
+                  cultural: "Literally 'good man/person' - respectful morning greeting",
+                  responses: [
+                    {
+                      salish: "ʔəy̓ swəy̓qəʔ",
+                      pronunciation: "uh-EE swuy-QUH",
+                      english: "Good morning (to you too)",
+                      appropriate: true
+                    },
+                    {
+                      salish: "hay čxʷ q̓ʷ",
+                      pronunciation: "HIGH chkhw kwuh",
+                      english: "Thank you",
+                      appropriate: true
+                    }
+                  ]
+                },
+                {
+                  speaker: "You",
+                  salish: "gʷəl ʔə kʷi sʔuladxʷ",
+                  pronunciation: "gwul uh kwee SOOL-ah-dkhw",
+                  english: "How are you today?",
+                  cultural: "Asking about wellbeing is important - shows respect and care",
+                  responses: null
+                },
+                {
+                  speaker: "Elder",
+                  salish: "ʔəy̓ čəd. hay čxʷ. gʷəl ʔə kʷi sʔuladxʷ",
+                  pronunciation: "uh-EE chud. HIGH chkhw. gwul uh kwee SOOL-ah-dkhw",
+                  english: "I'm good. Thank you. How are you today?",
+                  cultural: "Reciprocal questions show mutual care",
+                  responses: [
+                    {
+                      salish: "ʔəy̓ čəd",
+                      pronunciation: "uh-EE chud",
+                      english: "I'm good",
+                      appropriate: true
+                    },
+                    {
+                      salish: "ʔəy̓ čəd. ʔəsčaləčt",
+                      pronunciation: "uh-EE chud. us-CHAL-ucht",
+                      english: "I'm good. I'm hungry",
+                      appropriate: true
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              title: "Sharing a Meal",
+              icon: <CoffeeIcon />,
+              context: "Gathering to eat together",
+              dialogues: [
+                {
+                  speaker: "Host",
+                  salish: "k̓ʷəd čələp",
+                  pronunciation: "kwud CHUL-up",
+                  english: "Let's eat",
+                  cultural: "Invitation to share food - communal eating is central to culture",
+                  responses: [
+                    {
+                      salish: "hay čxʷ",
+                      pronunciation: "HIGH chkhw",
+                      english: "Thank you",
+                      appropriate: true
+                    }
+                  ]
+                },
+                {
+                  speaker: "You",
+                  salish: "stəb čəd",
+                  pronunciation: "stub chud",
+                  english: "I want water",
+                  cultural: "Polite to ask for what you need",
+                  responses: null
+                },
+                {
+                  speaker: "Host",
+                  salish: "həy̓, haw̓ kʷi qʷəlqʷəlt",
+                  pronunciation: "huh-EE, how kwee KWUL-kwult",
+                  english: "Here you go, take the water",
+                  cultural: "Offering freely - generosity is highly valued",
+                  responses: [
+                    {
+                      salish: "hay čxʷ q̓ʷ",
+                      pronunciation: "HIGH chkhw kwuh",
+                      english: "Thank you very much",
+                      appropriate: true
+                    }
+                  ]
+                },
+                {
+                  speaker: "Elder",
+                  salish: "ʔəy̓ ti sʔiləw̓",
+                  pronunciation: "uh-EE tee SEEL-ow",
+                  english: "The food is good",
+                  cultural: "Acknowledging good food shows gratitude to the cook",
+                  responses: [
+                    {
+                      salish: "ʔəy̓əy̓",
+                      pronunciation: "uh-EE-uh-EE",
+                      english: "Yes, it's very good",
+                      appropriate: true
+                    },
+                    {
+                      salish: "hay čxʷ ʔə ti sʔiləw̓",
+                      pronunciation: "HIGH chkhw uh tee SEEL-ow",
+                      english: "Thank you for the food",
+                      appropriate: true
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              title: "Meeting Someone",
+              icon: <UsersIcon />,
+              context: "Introduction and conversation",
+              dialogues: [
+                {
+                  speaker: "Person",
+                  salish: "ʔəy̓ swəy̓qəʔ. čɛ sən",
+                  pronunciation: "uh-EE swuy-QUH. cheh SUN",
+                  english: "Hello. What's your name?",
+                  cultural: "Names and identity are deeply important",
+                  responses: [
+                    {
+                      salish: "[Your name] čəd. čɛ sən",
+                      pronunciation: "[name] chud. cheh SUN",
+                      english: "I'm [name]. What's your name?",
+                      appropriate: true
+                    }
+                  ]
+                },
+                {
+                  speaker: "Person",
+                  salish: "dᶻədiʔ čəd. gʷət kʷi sʔux̌ʷəls",
+                  pronunciation: "dzuh-DEE chud. gwut kwee SOOKH-wuls",
+                  english: "I'm dᶻədiʔ. Where are you from?",
+                  cultural: "Knowing someone's homeland connects you to their relations",
+                  responses: [
+                    {
+                      salish: "ləʔləxʷən čəd ti [place]",
+                      pronunciation: "luh-LUKH-wun chud tee [place]",
+                      english: "I'm from [place]",
+                      appropriate: true
+                    },
+                    {
+                      salish: "ləʔləxʷən čəd dxʷʔal",
+                      pronunciation: "luh-LUKH-wun chud dkhw-AHL",
+                      english: "I'm from here",
+                      appropriate: true
+                    }
+                  ]
+                },
+                {
+                  speaker: "Person",
+                  salish: "ʔəy̓. ʔəsšədəxʷ čəd",
+                  pronunciation: "uh-EE. us-SHUD-ukhw chud",
+                  english: "Good. I'm happy (to meet you)",
+                  cultural: "Expressing positive feelings strengthens connection",
+                  responses: [
+                    {
+                      salish: "hay čxʷ. ʔəsšədəxʷ čəd ʔə",
+                      pronunciation: "HIGH chkhw. us-SHUD-ukhw chud uh",
+                      english: "Thank you. I'm happy too",
+                      appropriate: true
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              title: "Planning the Day",
+              icon: <LightbulbIcon />,
+              context: "Discussing activities and plans",
+              dialogues: [
+                {
+                  speaker: "Friend",
+                  salish: "gʷət kʷi ləʔəb",
+                  pronunciation: "gwut kwee luh-UB",
+                  english: "Where are you going?",
+                  cultural: "Sharing plans and movements - community awareness",
+                  responses: [
+                    {
+                      salish: "ləʔəb čəd ti sqʷəbayʔ",
+                      pronunciation: "luh-UB chud tee SKWUB-eye",
+                      english: "I'm going to the river",
+                      appropriate: true
+                    },
+                    {
+                      salish: "ləʔəb čəd ti xʷəlč",
+                      pronunciation: "luh-UB chud tee KHWULCH",
+                      english: "I'm going to the mountain",
+                      appropriate: true
+                    },
+                    {
+                      salish: "ləʔəb čəd ʔal ti ʔalʔal",
+                      pronunciation: "luh-UB chud ahl tee AHL-ahl",
+                      english: "I'm going to the house",
+                      appropriate: true
+                    }
+                  ]
+                },
+                {
+                  speaker: "You",
+                  salish: "hay̓ čxʷ ʔəs̓ələd",
+                  pronunciation: "high chkhw us-UL-ud",
+                  english: "Do you want to come?",
+                  cultural: "Inviting others to join - inclusion is valued",
+                  responses: null
+                },
+                {
+                  speaker: "Friend",
+                  salish: "ʔəy̓əy̓. ʔəs̓ələd čəd",
+                  pronunciation: "uh-EE-uh-EE. us-UL-ud chud",
+                  english: "Yes. I want to come",
+                  cultural: "Accepting invitations strengthens bonds",
+                  responses: [
+                    {
+                      salish: "ʔəy̓. ləʔəb č̓ələp",
+                      pronunciation: "uh-EE. luh-UB CHUL-up",
+                      english: "Good. Let's go",
+                      appropriate: true
+                    }
+                  ]
+                },
+                {
+                  speaker: "You",
+                  salish: "ləʔəb č̓ələp txʷəl ti swatixʷtəd",
+                  pronunciation: "luh-UB CHUL-up tkhwul tee swah-TEEKH-tud",
+                  english: "Let's go now",
+                  cultural: "Time references - 'now' indicates immediacy",
+                  responses: null
+                }
+              ]
+            },
+            {
+              title: "Evening Farewell",
+              icon: <MessageIcon />,
+              context: "Saying goodbye after visiting",
+              dialogues: [
+                {
+                  speaker: "You",
+                  salish: "ʔəy̓ ti č̓ax̌ʷ",
+                  pronunciation: "uh-EE tee CHAHKH",
+                  english: "It's getting late (good the evening)",
+                  cultural: "Acknowledging time - polite way to indicate departure",
+                  responses: null
+                },
+                {
+                  speaker: "Host",
+                  salish: "ʔəy̓əy̓. hay čxʷ ʔə ti č̓x̌ʷay̓",
+                  pronunciation: "uh-EE-uh-EE. HIGH chkhw uh tee CHKHW-eye",
+                  english: "Yes. Thank you for visiting",
+                  cultural: "Gratitude for presence and time shared",
+                  responses: [
+                    {
+                      salish: "hay čxʷ ʔə ti sʔiləw̓",
+                      pronunciation: "HIGH chkhw uh tee SEEL-ow",
+                      english: "Thank you for the food",
+                      appropriate: true
+                    },
+                    {
+                      salish: "hay čxʷ q̓ʷ",
+                      pronunciation: "HIGH chkhw kwuh",
+                      english: "Thank you very much",
+                      appropriate: true
+                    }
+                  ]
+                },
+                {
+                  speaker: "You",
+                  salish: "č̓ələp čəd. ʔux̌ʷəliʔ",
+                  pronunciation: "CHUL-up chud. ookh-WUL-ee",
+                  english: "I'm going. Goodbye (see you later)",
+                  cultural: "ʔux̌ʷəliʔ suggests you'll see them again - maintains connection",
+                  responses: null
+                },
+                {
+                  speaker: "Host",
+                  salish: "ʔux̌ʷəliʔ. ʔəy̓ kʷi stələm",
+                  pronunciation: "ookh-WUL-ee. uh-EE kwee STUL-um",
+                  english: "Goodbye. Have a good journey/way",
+                  cultural: "Wishing safe travel - care for one another",
+                  responses: [
+                    {
+                      salish: "hay čxʷ",
+                      pronunciation: "HIGH chkhw",
+                      english: "Thank you",
+                      appropriate: true
+                    }
+                  ]
+                }
+              ]
+            }
+          ];
+
+          const currentSceneData = scenes[currentScene];
+          const dialogue = currentSceneData.dialogues[currentDialogue];
+
+          const playAudio = (text) => {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 0.6;
+            utterance.pitch = 1;
+            speechSynthesis.speak(utterance);
+          };
+
+          const handleResponse = (response) => {
+            setSelectedResponse(response);
+            setTimeout(() => {
+              nextDialogue();
+            }, 2000);
+          };
+
+          const nextDialogue = () => {
+            if (currentDialogue < currentSceneData.dialogues.length - 1) {
+              setCurrentDialogue(currentDialogue + 1);
+              setSelectedResponse(null);
+              setShowTranslation(false);
+              setResponseMode(false);
+            } else {
+              if (!completedScenes.includes(currentScene)) {
+                setCompletedScenes([...completedScenes, currentScene]);
+              }
+            }
+          };
+
+          const nextScene = () => {
+            if (currentScene < scenes.length - 1) {
+              setCurrentScene(currentScene + 1);
+              setCurrentDialogue(0);
+              setSelectedResponse(null);
+              setShowTranslation(false);
+              setResponseMode(false);
+            }
+          };
+
+          const startResponse = () => {
+            setResponseMode(true);
+          };
+
+          return (
+            <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 p-4">
+              <div className="max-w-5xl mx-auto">
+                <div className="bg-gradient-to-r from-orange-800 to-red-800 rounded-lg shadow-lg p-6 mb-6 text-white">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h1 className="text-3xl font-bold mb-2">Salish Language - Living Conversations</h1>
+                      <p className="text-orange-100">Learn through real dialogue and cultural context</p>
+                    </div>
+                    <AwardIcon />
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-lg shadow-lg p-4 mb-6">
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setPracticeMode('listen')}
+                      className={`flex-1 py-2 px-4 rounded-lg font-semibold transition-colors ${
+                        practiceMode === 'listen' ? 'bg-orange-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      👂 Listen & Learn
+                    </button>
+                    <button
+                      onClick={() => setPracticeMode('respond')}
+                      className={`flex-1 py-2 px-4 rounded-lg font-semibold transition-colors ${
+                        practiceMode === 'respond' ? 'bg-orange-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      💬 Practice Responding
+                    </button>
+                    <button
+                      onClick={() => setPracticeMode('immerse')}
+                      className={`flex-1 py-2 px-4 rounded-lg font-semibold transition-colors ${
+                        practiceMode === 'immerse' ? 'bg-orange-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      🎯 Full Immersion
+                    </button>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="text-orange-600">{currentSceneData.icon}</div>
+                    <div>
+                      <h2 className="text-2xl font-bold text-gray-800">{currentSceneData.title}</h2>
+                      <p className="text-gray-600">{currentSceneData.context}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-2">
+                    {currentSceneData.dialogues.map((_, idx) => (
+                      <div
+                        key={idx}
+                        className={`h-2 flex-1 rounded ${
+                          idx < currentDialogue ? 'bg-green-500' : 
+                          idx === currentDialogue ? 'bg-orange-500' : 'bg-gray-200'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {currentDialogue < currentSceneData.dialogues.length ? (
+                  <div className="bg-white rounded-lg shadow-xl p-8 mb-6">
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                        <span className="text-2xl">{dialogue.speaker === 'You' ? '👤' : '👥'}</span>
+                      </div>
+                      <span className="text-xl font-semibold text-gray-700">{dialogue.speaker}</span>
+                    </div>
+
+                    <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-lg p-6 mb-4">
+                      <div className="flex items-start justify-between mb-3">
+                        <h3 className="text-3xl font-bold text-gray-800 leading-relaxed">{dialogue.salish}</h3>
+                        <button
+                          onClick={() => playAudio(dialogue.pronunciation)}
+                          className="p-3 bg-orange-600 hover:bg-orange-700 text-white rounded-full transition-colors"
+                        >
+                          <VolumeIcon />
+                        </button>
+                      </div>
+                      <p className="text-lg text-orange-700 font-medium mb-3">
+                        🔊 {dialogue.pronunciation}
+                      </p>
+                      
+                      {(practiceMode !== 'immerse' || showTranslation) && (
+                        <div className="border-t border-orange-200 pt-3">
+                          <p className="text-xl text-gray-700 mb-2">{dialogue.english}</p>
+                          <p className="text-sm text-gray-600 italic">💡 {dialogue.cultural}</p>
+                        </div>
+                      )}
+                      
+                      {practiceMode === 'immerse' && !showTranslation && (
+                        <button
+                          onClick={() => setShowTranslation(true)}
+                          className="mt-2 px-4 py-2 bg-white border-2 border-orange-300 text-orange-700 rounded-lg hover:bg-orange-50 transition-colors"
+                        >
+                          Show Translation
+                        </button>
+                      )}
+                    </div>
+
+                    {dialogue.responses && practiceMode === 'respond' && !responseMode && (
+                      <button
+                        onClick={startResponse}
+                        className="w-full py-3 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700 transition-colors"
+                      >
+                        Practice Your Response
+                      </button>
+                    )}
+
+                    {dialogue.responses && responseMode && (
+                      <div className="space-y-3">
+                        <p className="text-lg font-semibold text-gray-700 mb-3">How would you respond?</p>
+                        {dialogue.responses.map((response, idx) => (
+                          <button
+                            key={idx}
+                            onClick={() => handleResponse(response)}
+                            disabled={selectedResponse !== null}
+                            className={`w-full p-4 rounded-lg border-2 text-left transition-all ${
+                              selectedResponse === response
+                                ? 'border-green-500 bg-green-50'
+                                : 'border-gray-300 hover:border-orange-400 hover:bg-orange-50'
+                            } ${selectedResponse ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                          >
+                            <p className="text-xl font-bold text-gray-800 mb-1">{response.salish}</p>
+                            <p className="text-sm text-gray-600 mb-1">🔊 {response.pronunciation}</p>
+                            <p className="text-gray-700">{response.english}</p>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
+                    {(!dialogue.responses || !responseMode) && (
+                      <button
+                        onClick={nextDialogue}
+                        className="w-full py-3 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700 transition-colors flex items-center justify-center gap-2"
+                      >
+                        Continue <ChevronIcon />
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <div className="bg-white rounded-lg shadow-xl p-8 text-center mb-6">
+                    <div className="text-6xl mb-4">🎉</div>
+                    <h2 className="text-3xl font-bold mb-4 text-gray-800">Scene Complete!</h2>
+                    <p className="text-xl text-gray-600 mb-6">
+                      You've completed "{currentSceneData.title}"
+                    </p>
+                    {currentScene < scenes.length - 1 ? (
+                      <button
+                        onClick={nextScene}
+                        className="px-8 py-3 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700 transition-colors"
+                      >
+                        Next Scene →
+                      </button>
+                    ) : (
+                      <div className="text-2xl font-semibold text-green-600">
+                        🌟 You've completed all conversational scenes!
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {scenes.map((scene, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => {
+                        setCurrentScene(idx);
+                        setCurrentDialogue(0);
+                        setSelectedResponse(null);
+                        setShowTranslation(false);
+                        setResponseMode(false);
+                      }}
+                      className={`p-4 rounded-lg text-left transition-all ${
+                        idx === currentScene
+                          ? 'bg-orange-600 text-white shadow-lg'
+                          : completedScenes.includes(idx)
+                          ? 'bg-green-100 text-green-800 hover:bg-green-200'
+                          : 'bg-white text-gray-700 hover:bg-gray-50 shadow'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className={idx === currentScene ? 'text-white' : 'text-orange-600'}>
+                          {scene.icon}
+                        </div>
+                        <span className="font-semibold">{scene.title}</span>
+                      </div>
+                      <p className={`text-sm ${idx === currentScene ? 'text-orange-100' : 'text-gray-600'}`}>
+                        {scene.context}
+                      </p>
+                      {completedScenes.includes(idx) && (
+                        <div className="mt-2 text-sm font-semibold">✓ Completed</div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          );
+        };
+
+        ReactDOM.render(<SalishConversationalApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>

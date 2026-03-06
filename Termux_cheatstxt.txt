@@ -1,0 +1,59 @@
+┌─────────────────────────────────────────────┐
+│           Termux Cheat Sheet                │
+└─────────────────────────────────────────────┘
+
+=== File Navigation ===
+pwd                 # Show current directory
+ls                  # List files
+ls -l               # List with details
+cd ~/               # Go to home directory
+cd ../              # Go up one directory
+mkdir foldername    # Create a new directory
+rmdir foldername    # Remove empty directory
+
+=== File Management ===
+nano filename       # Open/create file in nano editor
+cp source dest      # Copy file
+mv source dest      # Move/rename file
+rm filename         # Delete file
+ls -lh              # Check file sizes
+
+=== Permissions & Executables ===
+ls -l               # Check file permissions
+chmod +x filename   # Make script executable
+./scriptname        # Run executable/script
+chown user:group file   # Change ownership (rarely needed)
+
+=== Running Scripts & Commands ===
+./runqwen           # Launch Qwen offline
+./bin/llama-cli ... # Direct call to Qwen binary with flags
+Ctrl+C              # Stop running script
+./script.sh arg1 arg2  # Run script with arguments
+
+=== System Info / Monitoring ===
+free -h             # Show memory usage
+top                 # Show running processes
+df -h               # Disk space usage
+uname -a            # System info
+whoami              # Current user
+
+=== Package Management ===
+pkg list-all        # Show available packages
+pkg search name     # Search for package
+pkg install name    # Install package
+pkg upgrade         # Upgrade installed packages
+
+=== Editing Shortcuts (Nano) ===
+Ctrl+O              # Save (Write Out)
+Ctrl+X              # Exit
+Ctrl+K              # Cut line
+Ctrl+U              # Paste
+Ctrl+W              # Search
+
+=== Tips for Offline Qwen Work ===
+- Keep models in ~/models
+- Keep scripts in ~/scripts
+- Always cd to the correct directory before running binaries
+- Use `./runqwen` or `~/runqwen` for consistent startup
+- Notes and prompts can be stored in text files for offline reference
+- Check memory with `free -h` before running large models
