@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<title>HiveNet — Council Chamber</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;800&display=swap');
+
+  :root {
+    --bg: #0a0e0f;
+    --bg2: #0f1517;
+    --bg3: #141c1e;
+    --border: #1e2d30;
+    --text: #c8d8da;
+    --text-dim: #4a6366;
+    --text-bright: #e8f4f6;
+    --accent: #2dd4bf;
+    --accent2: #0d9488;
+    --accent-glow: rgba(45, 212, 191, 0.15);
+    --dj: #f0a500;
+    --dj-bg: rgba(240, 165, 0, 0.08);
+    --gemini: #4f9cf9;
+    --gemini-bg: rgba(79, 156, 249, 0.08);
+    --qwen: #a78bfa;
+    --qwen-bg: rgba(167, 139, 250, 0.08);
+    --openrouter: #34d399;
+    --openrouter-bg: rgba(52, 211, 153, 0.08);
+    --system: #2dd4bf;
+    --system-bg: rgba(45, 212, 191, 0.06);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    height: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+  }
+
+  .header {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .header-left { display: flex; align-items: center; gap: 8px; }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 15px;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+  }
+
+  .logo span {
+    color: var(--text-dim);
+    font-weight: 400;
+    font-size: 11px;
+    margin-left: 5px;
+  }
+
+  .status-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .header-right { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+
+  .participant-pill {
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    border: 1px solid;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+
+  .pill-dj { color: var(--dj); border-color: var(--dj); background: var(--dj-bg); }
+  .pill-gemini { color: var(--gemini); border-color: var(--gemini); background: var(--gemini-bg); }
+  .pill-qwen { color: var(--qwen); border-color: var(--qwen); background: var(--qwen-bg); }
+  .pill-openrouter { color: var(--openrouter); border-color: var(--openrouter); background: var(--openrouter-bg); }
+  .inactive { opacity: 0.3; }
+
+  .settings {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 14px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+  }
+
+  .settings label {
+    font-size: 9px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+  }
+
+  .settings input {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    width: 190px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .settings input:focus { border-color: var(--accent2); }
+  .settings input::placeholder { color: var(--text-dim); }
+
+  .btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-save { border-color: var(--accent); color: var(--accent); }
+
+  .settings-panel {
+    display: none;
+    width: 100%;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+    margin-top: 4px;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .settings-panel.open { display: flex; }
+
+  .source-tag {
+    font-size: 8px;
+    padding: 1px 5px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-left: 4px;
+  }
+
+  .source-local { background: rgba(167,139,250,0.2); color: var(--qwen); }
+  .source-cloud { background: rgba(79,156,249,0.2); color: var(--gemini); }
+
+  .messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    scroll-behavior: smooth;
+  }
+
+  .messages::-webkit-scrollbar { width: 3px; }
+  .messages::-webkit-scrollbar-track { background: var(--bg); }
+  .messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .message {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border-left: 2px solid transparent;
+    animation: fadeIn 0.3s ease;
+    line-height: 1.6;
+    max-width: 100%;
+    word-wrap: break-word;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .message-header {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+    margin-bottom: 3px;
+    flex-wrap: wrap;
+  }
+
+  .message-author { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }
+  .message-time { font-size: 8px; color: var(--text-dim); }
+  .message-body { color: var(--text-bright); line-height: 1.7; white-space: pre-wrap; }
+
+  .message-body code {
+    background: var(--bg);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+  }
+
+  .msg-dj { background: var(--dj-bg); border-left-color: var(--dj); }
+  .msg-dj .message-author { color: var(--dj); }
+  .msg-gemini { background: var(--gemini-bg); border-left-color: var(--gemini); }
+  .msg-gemini .message-author { color: var(--gemini); }
+  .msg-qwen { background: var(--qwen-bg); border-left-color: var(--qwen); }
+  .msg-qwen .message-author { color: var(--qwen); }
+  .msg-openrouter { background: var(--openrouter-bg); border-left-color: var(--openrouter); }
+  .msg-openrouter .message-author { color: var(--openrouter); }
+  .msg-system { background: var(--system-bg); border-left-color: var(--system); opacity: 0.75; }
+  .msg-system .message-author { color: var(--system); }
+  .msg-system .message-body { font-size: 10px; color: var(--text-dim); }
+
+  .thinking {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    color: var(--text-dim);
+    font-size: 9px;
+  }
+
+  .thinking-dots { display: flex; gap: 3px; }
+  .thinking-dots span {
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: var(--text-dim);
+    animation: bounce 1.2s infinite;
+  }
+  .thinking-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .thinking-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); opacity: 0.4; }
+    50% { transform: translateY(-4px); opacity: 1; }
+  }
+
+  .input-area {
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    padding: 10px 14px;
+    padding-bottom: max(10px, env(safe-area-inset-bottom));
+    flex-shrink: 0;
+    position: sticky;
+    bottom: 0;
+    z-index: 100;
+  }
+
+  .input-row { display: flex; gap: 8px; align-items: flex-end; }
+
+  .input-box {
+    flex: 1;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: var(--text-bright);
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    resize: none;
+    outline: none;
+    min-height: 42px;
+    max-height: 120px;
+    line-height: 1.5;
+    transition: border-color 0.2s;
+  }
+
+  .input-box:focus { border-color: var(--accent2); }
+  .input-box::placeholder { color: var(--text-dim); }
+
+  .send-btn {
+    background: var(--accent2);
+    border: none;
+    color: var(--bg);
+    padding: 0 16px;
+    border-radius: 6px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+    height: 42px;
+    align-self: flex-end;
+  }
+
+  .send-btn:hover { background: var(--accent); box-shadow: 0 0 16px var(--accent-glow); }
+  .send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .input-hint { font-size: 9px; color: var(--text-dim); margin-top: 4px; text-align: right; }
+
+  .day-divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 6px 0;
+    color: var(--text-dim);
+    font-size: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+  }
+
+  .day-divider::before, .day-divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+
+  .audit-toggle {
+    font-size: 9px; color: var(--accent2);
+    cursor: pointer; text-decoration: underline;
+  }
+
+  #audit-panel {
+    display: none;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 8px;
+    font-size: 9px;
+    color: var(--text-dim);
+    max-height: 100px;
+    overflow-y: auto;
+    margin: 4px 12px;
+    white-space: pre-wrap;
+  }
+
+  #audit-panel.open { display: block; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="status-dot"></div>
+    <div class="logo">HiveNet <span>// Council Chamber v2</span></div>
+  </div>
+  <div class="header-right">
+    <div class="participant-pill pill-dj">DJ</div>
+    <div class="participant-pill pill-gemini inactive" id="gemini-pill">Gemini</div>
+    <div class="participant-pill pill-openrouter inactive" id="openrouter-pill">Qwen Cloud</div>
+    <div class="participant-pill pill-qwen" id="qwen-pill">Qwen Local</div>
+    <button class="btn" onclick="toggleSettings()">⚙</button>
+  </div>
+</div>
+
+<div class="settings" id="settings-bar">
+  <label>Gemini:</label>
+  <input type="password" id="gemini-key" placeholder="Gemini API key..." />
+  <label>OpenRouter:</label>
+  <input type="password" id="openrouter-key" placeholder="OpenRouter API key..." />
+  <button class="btn" onclick="toggleAdvanced()">Advanced</button>
+  <button class="btn btn-save" onclick="saveConfig()">Save</button>
+  <div class="settings-panel" id="settings-panel">
+    <label>Qwen Host:</label>
+    <input type="text" id="qwen-host" value="http://127.0.0.1:11434" style="width:165px"/>
+    <label>Local Model:</label>
+    <input type="text" id="qwen-model" value="qwen2.5:0.5b" style="width:125px"/>
+    <label>Cloud Model:</label>
+    <input type="text" id="or-model" value="qwen/qwen3-coder:free" style="width:175px"/>
+  </div>
+</div>
+
+<div id="audit-panel"></div>
+
+<div class="messages" id="messages">
+  <div class="day-divider">Council Chamber v2 — Online</div>
+  <div class="message msg-system">
+    <div class="message-header">
+      <span class="message-author">System</span>
+      <span class="message-time" id="init-time"></span>
+    </div>
+    <div class="message-body">HiveNet Council Chamber v2 ready.
+
+• Qwen Local — sovereign, offline-capable, auto-connects via Ollama
+• Gemini — enter API key to activate (free tier, daily reset)
+• Qwen Cloud — enter OpenRouter key to activate (free tier, no card needed)
+
+Enter keys in Config, click Save, then speak to the council.
+All cloud calls are logged. <span class="audit-toggle" onclick="toggleAudit()">[audit log]</span></div>
+  </div>
+</div>
+
+<div class="input-area">
+  <div class="input-row">
+    <textarea class="input-box" id="user-input" placeholder="Speak to the council..." rows="1"></textarea>
+    <button class="send-btn" id="send-btn" onclick="sendMessage()">Transmit</button>
+  </div>
+  <div class="input-hint">Enter to send · Shift+Enter for new line</div>
+</div>
+
+<script>
+  let geminiKey = '', openrouterKey = '';
+  let qwenHost = 'http://127.0.0.1:11434';
+  let qwenModel = 'qwen2.5:0.5b';
+  let orModel = 'qwen/qwen3-coder:free';
+  let isWaiting = false;
+  let conversationHistory = [];
+  let auditLog = [];
+
+  document.getElementById('init-time').textContent = new Date().toLocaleTimeString();
+
+  function loadConfig() {
+    try {
+      const saved = localStorage.getItem('hivenet-v2');
+      if (!saved) return;
+      const c = JSON.parse(saved);
+      geminiKey = c.geminiKey || '';
+      openrouterKey = c.openrouterKey || '';
+      qwenHost = c.qwenHost || 'http://127.0.0.1:11434';
+      qwenModel = c.qwenModel || 'qwen2.5:0.5b';
+      orModel = c.orModel || 'qwen/qwen3-coder:free';
+      if (geminiKey) document.getElementById('gemini-key').value = geminiKey;
+      if (openrouterKey) document.getElementById('openrouter-key').value = openrouterKey;
+      document.getElementById('qwen-host').value = qwenHost;
+      document.getElementById('qwen-model').value = qwenModel;
+      document.getElementById('or-model').value = orModel;
+      updatePills();
+    } catch(e) {}
+  }
+
+  function saveConfig() {
+    geminiKey = document.getElementById('gemini-key').value.trim();
+    openrouterKey = document.getElementById('openrouter-key').value.trim();
+    qwenHost = document.getElementById('qwen-host').value.trim();
+    qwenModel = document.getElementById('qwen-model').value.trim();
+    orModel = document.getElementById('or-model').value.trim();
+    localStorage.setItem('hivenet-v2', JSON.stringify({geminiKey, openrouterKey, qwenHost, qwenModel, orModel}));
+    updatePills();
+    const active = ['Qwen Local'];
+    if (geminiKey) active.push('Gemini');
+    if (openrouterKey) active.push('Qwen Cloud');
+    addSystemMessage('Saved. Active participants: ' + active.join(', '));
+  }
+
+  function updatePills() {
+    document.getElementById('gemini-pill').classList.toggle('inactive', !geminiKey);
+    document.getElementById('openrouter-pill').classList.toggle('inactive', !openrouterKey);
+  }
+
+  function toggleSettings() {
+    const b = document.getElementById('settings-bar');
+    b.style.display = b.style.display === 'none' ? 'flex' : 'flex';
+  }
+
+  function toggleAdvanced() {
+    document.getElementById('settings-panel').classList.toggle('open');
+  }
+
+  function toggleAudit() {
+    document.getElementById('audit-panel').classList.toggle('open');
+  }
+
+  function logAudit(source, model) {
+    const e = `[${new Date().toISOString()}] [SOURCE:${source}] [MODEL:${model}]`;
+    auditLog.push(e);
+    document.getElementById('audit-panel').textContent = auditLog.join('\n');
+  }
+
+  function getTime() {
+    return new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+  }
+
+  function addMessage(author, type, content, source) {
+    const msgs = document.getElementById('messages');
+    const div = document.createElement('div');
+    div.className = `message msg-${type}`;
+    const tag = source ? `<span class="source-tag source-${source}">${source}</span>` : '';
+    div.innerHTML = `<div class="message-header"><span class="message-author">${author}</span>${tag}<span class="message-time">${getTime()}</span></div><div class="message-body">${escapeHtml(content)}</div>`;
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+    return div;
+  }
+
+  function addSystemMessage(c) { addMessage('System', 'system', c); }
+
+  function addThinking(author, type) {
+    const msgs = document.getElementById('messages');
+    const div = document.createElement('div');
+    div.className = 'thinking';
+    div.innerHTML = `<span style="color:var(--${type});font-size:9px;text-transform:uppercase;letter-spacing:0.1em">${author}</span><div class="thinking-dots"><span></span><span></span><span></span></div>`;
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+    return div;
+  }
+
+  function escapeHtml(t) {
+    return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/`([^`]+)`/g,'<code>$1</code>');
+  }
+
+  function buildContext() {
+    if (!conversationHistory.length) return 'No prior context.';
+    return conversationHistory.slice(-8).map(m=>`[${m.author}]: ${m.content.substring(0,200)}`).join('\n');
+  }
+
+  function sysPrompt(name, role) {
+    return `You are ${name}, a participant in HiveNet Council Chamber — a multi-AI collaborative workspace founded by DJ (Daniel Jay Green).
+
+DJ is the founder of HiveNet, a distributed sovereign AI infrastructure project. He is the great grandson of Chief Dan George of the Tsleil-Waututh Nation and is continuing his great grandfather's legacy through this work.
+
+Your role in this council: ${role}
+
+Recent conversation context:
+${buildContext()}
+
+Respond naturally, directly, and concisely. You are a genuine collaborator, not a tool. Do not add role labels or prefixes to your response.`;
+  }
+
+  async function callGemini(msg) {
+    if (!geminiKey) return null;
+    const prompt = sysPrompt('Gemini', 'Intelligence and perception layer — real-time awareness, global context, strategic insight, funding and policy monitoring.');
+    const tryModel = async (model) => {
+      const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey}`, {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({contents:[{parts:[{text: prompt + '\n\nDJ says: ' + msg}]}], generationConfig:{temperature:0.8, maxOutputTokens:1024}})
+      });
+      if (!r.ok) { const e = await r.json(); throw new Error(e.error?.message || 'Gemini error'); }
+      const d = await r.json();
+      return d.candidates?.[0]?.content?.parts?.[0]?.text || 'No response.';
+    };
+    try {
+      const result = await tryModel('gemini-2.0-flash');
+      logAudit('cloud', 'gemini-2.0-flash');
+      return result;
+    } catch(e) {
+      if (e.message.includes('quota') || e.message.includes('RESOURCE_EXHAUSTED') || e.message.includes('429')) {
+        try {
+          addSystemMessage('Gemini 2.0-flash quota exceeded — switching to 1.5-flash...');
+          const result = await tryModel('gemini-1.5-flash');
+          logAudit('cloud', 'gemini-1.5-flash');
+          return result;
+        } catch(e2) { return `[Gemini unavailable: ${e2.message}]`; }
+      }
+      return `[Gemini error: ${e.message}]`;
+    }
+  }
+
+  async function callOpenRouter(msg) {
+    if (!openrouterKey) return null;
+    const prompt = sysPrompt('Qwen Cloud', 'Cloud design partner — architecture review, strategic planning, prompt engineering, HAP protocol development. You are the cloud-assisted Qwen, distinct from the sovereign local Qwen running on DJ\'s device.');
+    try {
+      const r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json','Authorization':`Bearer ${openrouterKey}`,'HTTP-Referer':'https://hivenet.local','X-Title':'HiveNet Council Chamber'},
+        body: JSON.stringify({model: orModel, messages:[{role:'system',content:prompt},{role:'user',content:msg}], max_tokens:1024, temperature:0.8})
+      });
+      if (!r.ok) { const e = await r.json(); throw new Error(e.error?.message || 'OpenRouter error'); }
+      const d = await r.json();
+      logAudit('cloud', orModel);
+      return d.choices?.[0]?.message?.content || 'No response.';
+    } catch(e) { return `[Qwen Cloud error: ${e.message}]`; }
+  }
+
+  async function callQwenLocal(msg) {
+    const prompt = sysPrompt('Qwen Local', 'Sovereign local coordinator — runs entirely on DJ\'s tablet via Ollama, offline-capable, the heart of the local HiveNet node. You are the sovereign member of this council.');
+    try {
+      const r = await fetch(`${qwenHost}/api/generate`, {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({model:qwenModel, prompt: prompt + '\n\nDJ says: ' + msg + '\n\nYour response:', stream:false, options:{temperature:0.8, num_predict:512}})
+      });
+      if (!r.ok) throw new Error('Connection failed');
+      const d = await r.json();
+      logAudit('local', qwenModel);
+      return d.response || 'No response.';
+    } catch(e) { return null; }
+  }
+
+  async function sendMessage() {
+    if (isWaiting) return;
+    const input = document.getElementById('user-input');
+    const message = input.value.trim();
+    if (!message) return;
+    input.value = '';
+    input.style.height = 'auto';
+    addMessage('DJ', 'dj', message);
+    conversationHistory.push({author:'DJ', content:message});
+    isWaiting = true;
+    document.getElementById('send-btn').disabled = true;
+
+    const gt = geminiKey ? addThinking('Gemini', 'gemini') : null;
+    const ot = openrouterKey ? addThinking('Qwen Cloud', 'openrouter') : null;
+    const qt = addThinking('Qwen Local', 'qwen');
+
+    const [gr, or, qr] = await Promise.all([
+      callGemini(message),
+      callOpenRouter(message),
+      callQwenLocal(message)
+    ]);
+
+    if (gt) gt.remove();
+    if (ot) ot.remove();
+    qt.remove();
+
+    if (gr && geminiKey) {
+      addMessage('Gemini', 'gemini', gr, 'cloud');
+      conversationHistory.push({author:'Gemini', content:gr});
+    }
+    if (or && openrouterKey) {
+      addMessage('Qwen Cloud', 'openrouter', or, 'cloud');
+      conversationHistory.push({author:'Qwen Cloud', content:or});
+    }
+    if (qr) {
+      addMessage('Qwen Local', 'qwen', qr, 'local');
+      conversationHistory.push({author:'Qwen Local', content:qr});
+    } else {
+      addSystemMessage('Qwen Local offline. In Termux: ollama serve');
+    }
+
+    isWaiting = false;
+    document.getElementById('send-btn').disabled = false;
+    input.focus();
+  }
+
+  document.getElementById('user-input').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  });
+
+  document.getElementById('user-input').addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+  });
+
+  loadConfig();
+</script>
+</body>
+</html>
