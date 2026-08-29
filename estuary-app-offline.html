@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>The Estuary — Cultural Circle</title>
+<style>
+  :root{
+    --river:#1F5F63;
+    --river-deep:#153F42;
+    --clay:#A85832;
+    --clay-light:#C97D51;
+    --bark:#332420;
+    --bark-soft:#5A473F;
+    --paper:#EFE7D6;
+    --paper-warm:#E6DBC4;
+    --gold:#C9A227;
+    --card:#FBF7EE;
+    --line:#D9CCB0;
+    --danger:#9C3B2E;
+    --radius:18px;
+    --shadow: 0 2px 10px rgba(51,36,32,0.10);
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--bark);
+    font-family: Georgia, 'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif;
+    font-size:18px;
+    -webkit-font-smoothing:antialiased;
+    display:flex;
+    justify-content:center;
+  }
+  #app{
+    width:100%;
+    max-width:520px;
+    min-height:100vh;
+    background:var(--paper);
+    position:relative;
+    display:flex;
+    flex-direction:column;
+  }
+
+  h1,h2,h3{ font-family: Georgia, 'Iowan Old Style', 'Palatino Linotype', serif; font-weight:600; color:var(--bark); margin:0; }
+
+  /* HEADER */
+  header.top{
+    padding:22px 20px 16px;
+    background:linear-gradient(180deg, var(--river) 0%, var(--river-deep) 100%);
+    color:var(--paper);
+    border-radius:0 0 26px 26px;
+    box-shadow:var(--shadow);
+  }
+  header.top .brand{
+    display:flex; align-items:center; gap:12px;
+  }
+  header.top .brand svg{ flex-shrink:0; }
+  header.top h1{ color:#fff; font-size:26px; letter-spacing:0.2px; }
+  header.top p.tag{ margin:4px 0 0; font-size:14.5px; color:var(--gold); font-weight:600; letter-spacing:0.3px; }
+
+  main{ flex:1; padding:20px 18px 100px; }
+
+  .screen{ display:none; animation:fade .25s ease; }
+  .screen.active{ display:block; }
+  @keyframes fade{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;} }
+
+  /* HOME */
+  .welcome-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:20px;
+    margin-bottom:20px;
+    box-shadow:var(--shadow);
+  }
+  .welcome-card p{ margin:0; line-height:1.55; color:var(--bark-soft); font-size:16.5px; }
+
+  .big-actions{ display:grid; gap:14px; margin-top:6px; }
+  .big-btn{
+    display:flex; align-items:center; gap:16px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:20px;
+    text-align:left;
+    cursor:pointer;
+    box-shadow:var(--shadow);
+    transition:transform .12s ease, box-shadow .12s ease;
+    font-family:inherit;
+  }
+  .big-btn:active{ transform:scale(0.98); }
+  .big-btn .icon{
+    width:52px; height:52px; border-radius:14px;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .big-btn .icon svg{ width:28px; height:28px; }
+  .big-btn.record .icon{ background:var(--clay); }
+  .big-btn.entries .icon{ background:var(--river); }
+  .big-btn.circles .icon{ background:var(--gold); }
+  .big-btn .txt h3{ font-size:19px; margin-bottom:2px; }
+  .big-btn .txt span{ font-size:14.5px; color:var(--bark-soft); }
+
+  .stat-row{ display:flex; gap:12px; margin-top:20px; }
+  .stat{
+    flex:1; background:var(--paper-warm); border-radius:14px; padding:14px 12px; text-align:center;
+    border:1px solid var(--line);
+  }
+  .stat .num{ font-family: Georgia, 'Iowan Old Style', 'Palatino Linotype', serif; font-size:26px; font-weight:700; color:var(--river-deep); }
+  .stat .lab{ font-size:12.5px; color:var(--bark-soft); text-transform:uppercase; letter-spacing:0.5px; }
+
+  /* SECTION HEADERS */
+  .section-head{ display:flex; align-items:baseline; justify-content:space-between; margin-bottom:14px; }
+  .section-head h2{ font-size:23px; }
+  .section-head .sub{ font-size:14px; color:var(--bark-soft); margin-top:2px; }
+
+  /* RECORD SCREEN */
+  .record-stage{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:26px 20px; text-align:center; box-shadow:var(--shadow); margin-bottom:18px;
+  }
+  .rec-btn{
+    width:104px; height:104px; border-radius:50%;
+    background:var(--clay); border:none; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    margin:6px auto 14px; box-shadow:0 4px 16px rgba(168,88,50,0.35);
+    transition:all .15s ease;
+  }
+  .rec-btn.active{ background:var(--danger); animation:pulse 1.4s infinite; }
+  @keyframes pulse{ 0%{box-shadow:0 0 0 0 rgba(156,59,46,0.45);} 70%{box-shadow:0 0 0 22px rgba(156,59,46,0);} 100%{box-shadow:0 0 0 0 rgba(156,59,46,0);} }
+  .rec-btn svg{ width:40px; height:40px; }
+  .rec-status{ font-size:16px; color:var(--bark-soft); min-height:24px; }
+  .rec-timer{ font-family: Georgia, 'Iowan Old Style', 'Palatino Linotype', serif; font-size:32px; color:var(--bark); font-weight:600; margin-top:4px; }
+
+  .field{ margin-bottom:16px; }
+  .field label{ display:block; font-size:14.5px; font-weight:600; color:var(--bark-soft); margin-bottom:6px; }
+  .field input[type=text], .field textarea, .field select{
+    width:100%; border:1px solid var(--line); border-radius:12px; padding:13px 14px;
+    font-family:inherit; font-size:16.5px; background:var(--card); color:var(--bark);
+  }
+  .field textarea{ min-height:90px; resize:vertical; }
+  .chip-row{ display:flex; flex-wrap:wrap; gap:8px; }
+  .chip{
+    border:1px solid var(--line); background:var(--card); border-radius:999px;
+    padding:9px 15px; font-size:14.5px; cursor:pointer; color:var(--bark-soft);
+  }
+  .chip.selected{ background:var(--river); color:#fff; border-color:var(--river); font-weight:600; }
+
+  .primary-btn{
+    width:100%; background:var(--river); color:#fff; border:none; border-radius:14px;
+    padding:16px; font-size:17px; font-weight:600; font-family:inherit; cursor:pointer;
+    box-shadow:var(--shadow); margin-top:6px;
+  }
+  .primary-btn:disabled{ opacity:0.5; }
+  .ghost-btn{
+    width:100%; background:transparent; color:var(--bark-soft); border:1px solid var(--line); border-radius:14px;
+    padding:14px; font-size:15.5px; font-family:inherit; cursor:pointer; margin-top:10px;
+  }
+
+  /* ENTRIES */
+  .entry-card{
+    background:var(--card); border:1px solid var(--line); border-radius:16px;
+    padding:16px; margin-bottom:12px; box-shadow:var(--shadow);
+  }
+  .entry-card .top-row{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
+  .entry-card h3{ font-size:18px; }
+  .entry-card .cat{
+    font-size:12px; text-transform:uppercase; letter-spacing:0.4px; font-weight:700;
+    color:var(--river-deep); background:var(--paper-warm); padding:4px 9px; border-radius:8px; white-space:nowrap;
+  }
+  .entry-card .meta{ font-size:13.5px; color:var(--bark-soft); margin-top:6px; }
+  .entry-card p.note{ margin:10px 0 0; font-size:15px; line-height:1.5; color:var(--bark); }
+  .entry-card audio{ width:100%; margin-top:10px; }
+  .empty-state{
+    text-align:center; padding:50px 20px; color:var(--bark-soft);
+  }
+  .empty-state svg{ width:56px; height:56px; opacity:0.5; margin-bottom:14px; }
+
+  /* CIRCLES / ESTUARY */
+  .notice{
+    background:var(--paper-warm); border:1px solid var(--line); border-radius:14px;
+    padding:14px 16px; font-size:14px; color:var(--bark-soft); margin-bottom:18px; line-height:1.5;
+  }
+  .notice b{ color:var(--bark); }
+  .circle-card{
+    display:flex; align-items:center; gap:14px;
+    background:var(--card); border:1px solid var(--line); border-radius:16px;
+    padding:15px; margin-bottom:12px; box-shadow:var(--shadow);
+  }
+  .circle-card .avatar{
+    width:50px; height:50px; border-radius:50%; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-family: Georgia, 'Iowan Old Style', 'Palatino Linotype', serif;
+    font-weight:700; color:#fff; font-size:19px;
+  }
+  .circle-card .info{ flex:1; min-width:0; }
+  .circle-card .info h3{ font-size:16.5px; }
+  .circle-card .info .desc{ font-size:13.5px; color:var(--bark-soft); margin-top:2px; }
+  .circle-card .status{ font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.3px; }
+  .circle-card .status.near{ color:var(--river); }
+  .circle-card .status.far{ color:var(--bark-soft); }
+  .connect-btn{
+    border:none; border-radius:10px; padding:9px 13px; font-size:13.5px; font-weight:600;
+    background:var(--gold); color:var(--bark); cursor:pointer; flex-shrink:0; font-family:inherit;
+  }
+  .connect-btn.connected{ background:var(--river); color:#fff; }
+
+  /* NAV */
+  nav.bottom{
+    position:fixed; bottom:0; left:50%; transform:translateX(-50%);
+    width:100%; max-width:520px; background:var(--card);
+    border-top:1px solid var(--line);
+    display:flex; padding:8px 6px calc(8px + env(safe-area-inset-bottom));
+    box-shadow:0 -2px 10px rgba(51,36,32,0.08);
+  }
+  nav.bottom button{
+    flex:1; background:none; border:none; display:flex; flex-direction:column; align-items:center; gap:4px;
+    padding:8px 2px; cursor:pointer; color:var(--bark-soft); font-family:inherit; font-size:11.5px; font-weight:600;
+  }
+  nav.bottom button svg{ width:24px; height:24px; }
+  nav.bottom button.active{ color:var(--river); }
+  nav.bottom button.active svg{ stroke:var(--river); }
+
+  .toast{
+    position:fixed; bottom:90px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:var(--bark); color:var(--paper); padding:12px 20px; border-radius:12px;
+    font-size:14.5px; opacity:0; transition:all .25s ease; pointer-events:none; z-index:50;
+    max-width:440px; text-align:center;
+  }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <header class="top">
+    <div class="brand">
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+        <path d="M6 30 C10 22, 12 18, 20 18 C28 18, 30 22, 34 30" stroke="#C9A227" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+        <path d="M2 34 C7 28, 13 26, 20 26 C27 26, 33 28, 38 34" stroke="#EFE7D6" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+        <circle cx="20" cy="12" r="5" fill="#C9A227"/>
+      </svg>
+      <div>
+        <h1>The Estuary</h1>
+        <p class="tag">Cultural Circle</p>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- HOME -->
+    <section class="screen active" id="screen-home">
+      <div class="welcome-card">
+        <p>This is a place to keep what matters — stories, songs, teachings, language — and to find other circles doing the same work. What you record here stays yours.</p>
+      </div>
+      <div class="big-actions">
+        <button class="big-btn record" onclick="goTo('record')">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 15a3 3 0 003-3V6a3 3 0 10-6 0v6a3 3 0 003 3z"/><path d="M19 11a7 7 0 01-14 0M12 18v3"/></svg></span>
+          <span class="txt"><h3>Record a Story</h3><span>Voice, notes, or both</span></span>
+        </button>
+        <button class="big-btn entries" onclick="goTo('entries')">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></span>
+          <span class="txt"><h3>My Entries</h3><span id="home-entry-count">Nothing saved yet</span></span>
+        </button>
+        <button class="big-btn circles" onclick="goTo('circles')">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#332420" stroke-width="2"><circle cx="12" cy="12" r="3"/><circle cx="5" cy="19" r="2.2"/><circle cx="19" cy="19" r="2.2"/><circle cx="19" cy="5" r="2.2"/><path d="M9.8 10.2L6.6 17.3M14.2 10.2l3.2 7.1M12 9V6"/></svg></span>
+          <span class="txt"><h3>Nearby Circles</h3><span>See who else is keeping culture</span></span>
+        </button>
+      </div>
+      <div class="stat-row">
+        <div class="stat"><div class="num" id="stat-entries">0</div><div class="lab">Entries</div></div>
+        <div class="stat"><div class="num" id="stat-circles">4</div><div class="lab">Circles nearby</div></div>
+      </div>
+    </section>
+
+    <!-- RECORD -->
+    <section class="screen" id="screen-record">
+      <div class="section-head"><div><h2>Record a Story</h2><div class="sub">Press the button to start and stop</div></div></div>
+
+      <div class="record-stage">
+        <button class="rec-btn" id="recBtn" onclick="toggleRecording()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" id="recIcon"><path d="M12 15a3 3 0 003-3V6a3 3 0 10-6 0v6a3 3 0 003 3z"/><path d="M19 11a7 7 0 01-14 0M12 18v3"/></svg>
+        </button>
+        <div class="rec-timer" id="recTimer">0:00</div>
+        <div class="rec-status" id="recStatus">Ready when you are</div>
+        <div id="recPlayback"></div>
+      </div>
+
+      <div class="field">
+        <label for="entryTitle">Title</label>
+        <input type="text" id="entryTitle" placeholder="What is this story called?">
+      </div>
+
+      <div class="field">
+        <label>Kind of entry</label>
+        <div class="chip-row" id="catChips">
+          <div class="chip" data-cat="Story">Story</div>
+          <div class="chip" data-cat="Song">Song</div>
+          <div class="chip" data-cat="Teaching">Teaching</div>
+          <div class="chip" data-cat="Language">Language</div>
+          <div class="chip" data-cat="History">History</div>
+          <div class="chip" data-cat="Other">Other</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="entryNote">Notes (optional)</label>
+        <textarea id="entryNote" placeholder="Anything you want written alongside the recording — who is speaking, when, why it matters."></textarea>
+      </div>
+
+      <button class="primary-btn" id="saveBtn" onclick="saveEntry()">Save Entry</button>
+      <button class="ghost-btn" onclick="resetRecordForm()">Clear</button>
+    </section>
+
+    <!-- ENTRIES -->
+    <section class="screen" id="screen-entries">
+      <div class="section-head"><div><h2>My Entries</h2><div class="sub" id="entries-sub">Kept on this device</div></div></div>
+      <div id="entriesList"></div>
+    </section>
+
+    <!-- CIRCLES -->
+    <section class="screen" id="screen-circles">
+      <div class="section-head"><div><h2>Nearby Circles</h2><div class="sub">Other keepers working nearby</div></div></div>
+      <div class="notice"><b>Demonstration view.</b> This shows how discovering other circles will work once devices are meshed together. These are example circles, not live connections yet.</div>
+      <div id="circlesList"></div>
+    </section>
+
+  </main>
+
+  <nav class="bottom">
+    <button data-screen="home" class="active" onclick="goTo('home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+      Home
+    </button>
+    <button data-screen="record" onclick="goTo('record')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15a3 3 0 003-3V6a3 3 0 10-6 0v6a3 3 0 003 3z"/><path d="M19 11a7 7 0 01-14 0M12 18v3"/></svg>
+      Record
+    </button>
+    <button data-screen="entries" onclick="goTo('entries')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+      Entries
+    </button>
+    <button data-screen="circles" onclick="goTo('circles')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><circle cx="5" cy="19" r="2.2"/><circle cx="19" cy="19" r="2.2"/><circle cx="19" cy="5" r="2.2"/><path d="M9.8 10.2L6.6 17.3M14.2 10.2l3.2 7.1M12 9V6"/></svg>
+      Circles
+    </button>
+  </nav>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+// ---------- Offline storage (IndexedDB) ----------
+// Mimics the get/set/list interface used elsewhere in this app, so the
+// rest of the app's logic works unchanged whether running as a Claude
+// artifact or as a standalone offline file.
+const DB_NAME = 'estuary-db';
+const STORE_NAME = 'kv';
+let dbPromise = null;
+
+function openDB(){
+  if(dbPromise) return dbPromise;
+  dbPromise = new Promise((resolve, reject)=>{
+    const req = indexedDB.open(DB_NAME, 1);
+    req.onupgradeneeded = ()=>{
+      req.result.createObjectStore(STORE_NAME);
+    };
+    req.onsuccess = ()=> resolve(req.result);
+    req.onerror = ()=> reject(req.error);
+  });
+  return dbPromise;
+}
+
+window.storage = {
+  async set(key, value){
+    try{
+      const db = await openDB();
+      return new Promise((resolve,reject)=>{
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        tx.objectStore(STORE_NAME).put(value, key);
+        tx.oncomplete = ()=> resolve({key, value, shared:false});
+        tx.onerror = ()=> reject(tx.error);
+      });
+    }catch(err){ return null; }
+  },
+  async get(key){
+    const db = await openDB();
+    return new Promise((resolve,reject)=>{
+      const tx = db.transaction(STORE_NAME, 'readonly');
+      const req = tx.objectStore(STORE_NAME).get(key);
+      req.onsuccess = ()=>{
+        if(req.result === undefined){ reject(new Error('not found')); return; }
+        resolve({key, value:req.result, shared:false});
+      };
+      req.onerror = ()=> reject(req.error);
+    });
+  },
+  async delete(key){
+    const db = await openDB();
+    return new Promise((resolve,reject)=>{
+      const tx = db.transaction(STORE_NAME, 'readwrite');
+      tx.objectStore(STORE_NAME).delete(key);
+      tx.oncomplete = ()=> resolve({key, deleted:true, shared:false});
+      tx.onerror = ()=> reject(tx.error);
+    });
+  },
+  async list(prefix){
+    const db = await openDB();
+    return new Promise((resolve,reject)=>{
+      const tx = db.transaction(STORE_NAME, 'readonly');
+      const req = tx.objectStore(STORE_NAME).getAllKeys();
+      req.onsuccess = ()=>{
+        let keys = req.result;
+        if(prefix) keys = keys.filter(k=> String(k).startsWith(prefix));
+        resolve({keys, prefix, shared:false});
+      };
+      req.onerror = ()=> reject(req.error);
+    });
+  }
+};
+
+// ---------- Navigation ----------
+function goTo(name){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  document.querySelectorAll('nav.bottom button').forEach(b=>b.classList.toggle('active', b.dataset.screen===name));
+  if(name==='entries') renderEntries();
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+// ---------- Category chips ----------
+let selectedCat = null;
+document.getElementById('catChips').addEventListener('click', e=>{
+  const chip = e.target.closest('.chip');
+  if(!chip) return;
+  document.querySelectorAll('#catChips .chip').forEach(c=>c.classList.remove('selected'));
+  chip.classList.add('selected');
+  selectedCat = chip.dataset.cat;
+});
+
+// ---------- Recording ----------
+let mediaRecorder=null, audioChunks=[], recording=false, timerInterval=null, seconds=0, lastAudioURL=null, lastAudioBase64=null;
+
+async function toggleRecording(){
+  const btn=document.getElementById('recBtn');
+  const status=document.getElementById('recStatus');
+  if(!recording){
+    try{
+      const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+      audioChunks=[];
+      mediaRecorder = new MediaRecorder(stream);
+      mediaRecorder.ondataavailable = e=> audioChunks.push(e.data);
+      mediaRecorder.onstop = async ()=>{
+        const blob = new Blob(audioChunks, {type:'audio/webm'});
+        lastAudioURL = URL.createObjectURL(blob);
+        document.getElementById('recPlayback').innerHTML = '<audio controls src="'+lastAudioURL+'" style="width:100%;margin-top:10px;"></audio>';
+        try{
+          if(blob.size < 800000){
+            lastAudioBase64 = await blobToBase64(blob);
+          } else {
+            lastAudioBase64 = null;
+          }
+        }catch(err){ lastAudioBase64 = null; }
+        stream.getTracks().forEach(t=>t.stop());
+      };
+      mediaRecorder.start();
+      recording=true;
+      btn.classList.add('active');
+      status.textContent='Recording — press again to stop';
+      seconds=0;
+      updateTimer();
+      timerInterval=setInterval(()=>{ seconds++; updateTimer(); }, 1000);
+    }catch(err){
+      status.textContent='Microphone not available — you can still write notes below';
+    }
+  } else {
+    mediaRecorder.stop();
+    recording=false;
+    btn.classList.remove('active');
+    status.textContent='Recording saved below';
+    clearInterval(timerInterval);
+  }
+}
+
+function updateTimer(){
+  const m=Math.floor(seconds/60), s=seconds%60;
+  document.getElementById('recTimer').textContent = m+':'+String(s).padStart(2,'0');
+}
+
+function blobToBase64(blob){
+  return new Promise((resolve,reject)=>{
+    const reader = new FileReader();
+    reader.onloadend = ()=> resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
+function resetRecordForm(){
+  document.getElementById('entryTitle').value='';
+  document.getElementById('entryNote').value='';
+  document.getElementById('recPlayback').innerHTML='';
+  document.querySelectorAll('#catChips .chip').forEach(c=>c.classList.remove('selected'));
+  selectedCat=null;
+  lastAudioURL=null; lastAudioBase64=null;
+  seconds=0; updateTimer();
+  document.getElementById('recStatus').textContent='Ready when you are';
+}
+
+// ---------- Storage ----------
+async function saveEntry(){
+  const title = document.getElementById('entryTitle').value.trim();
+  const note = document.getElementById('entryNote').value.trim();
+  if(!title){ showToast('Give the entry a title first'); return; }
+
+  const entry = {
+    id: 'entry_'+Date.now(),
+    title,
+    category: selectedCat || 'Other',
+    note,
+    hasAudio: !!lastAudioBase64,
+    audio: lastAudioBase64 || null,
+    created: new Date().toISOString()
+  };
+
+  try{
+    const result = await window.storage.set('entries:'+entry.id, JSON.stringify(entry), false);
+    if(!result){ showToast('Could not save — try again'); return; }
+    showToast('Saved to your entries');
+    resetRecordForm();
+    goTo('entries');
+  }catch(err){
+    showToast('Could not save this entry');
+  }
+}
+
+async function loadEntries(){
+  try{
+    const listResult = await window.storage.list('entries:', false);
+    if(!listResult || !listResult.keys) return [];
+    const items = [];
+    for(const key of listResult.keys){
+      try{
+        const r = await window.storage.get(key, false);
+        if(r && r.value) items.push(JSON.parse(r.value));
+      }catch(e){}
+    }
+    items.sort((a,b)=> new Date(b.created) - new Date(a.created));
+    return items;
+  }catch(err){
+    return [];
+  }
+}
+
+async function renderEntries(){
+  const list = document.getElementById('entriesList');
+  const entries = await loadEntries();
+
+  document.getElementById('stat-entries').textContent = entries.length;
+  document.getElementById('home-entry-count').textContent = entries.length ? (entries.length+' saved') : 'Nothing saved yet';
+  document.getElementById('entries-sub').textContent = entries.length ? (entries.length+' kept on this device') : 'Kept on this device';
+
+  if(entries.length===0){
+    list.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="#5A473F" stroke-width="1.6"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg><div>No entries yet.<br>Record your first story to begin.</div></div>';
+    return;
+  }
+
+  list.innerHTML = entries.map(e=>{
+    const date = new Date(e.created).toLocaleDateString(undefined, {month:'short', day:'numeric', year:'numeric'});
+    return `<div class="entry-card">
+      <div class="top-row">
+        <h3>${escapeHtml(e.title)}</h3>
+        <span class="cat">${escapeHtml(e.category)}</span>
+      </div>
+      <div class="meta">${date}${e.hasAudio ? ' · voice recording' : ''}</div>
+      ${e.note ? `<p class="note">${escapeHtml(e.note)}</p>` : ''}
+      ${e.audio ? `<audio controls src="${e.audio}"></audio>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function escapeHtml(str){
+  const d=document.createElement('div');
+  d.textContent=str;
+  return d.innerHTML;
+}
+
+// ---------- Circles (Estuary demo) ----------
+const demoCircles = [
+  {name:'Cedar River Keepers', initials:'CR', color:'#1F5F63', desc:'Language & song archive · 214 entries', near:true},
+  {name:'Blue Mesa Youth Circle', initials:'BM', color:'#A85832', desc:'Oral history project · 58 entries', near:true},
+  {name:"Grandmother's Table", initials:'GT', color:'#C9A227', desc:'Recipes & teachings · 132 entries', near:false},
+  {name:'Northern Star Archive', initials:'NS', color:'#5A473F', desc:'Ceremony & seasonal knowledge · 340 entries', near:false},
+];
+let connections = {};
+
+function renderCircles(){
+  const list = document.getElementById('circlesList');
+  list.innerHTML = demoCircles.map((c,i)=>{
+    const connected = connections[i];
+    return `<div class="circle-card">
+      <div class="avatar" style="background:${c.color}">${c.initials}</div>
+      <div class="info">
+        <h3>${c.name}</h3>
+        <div class="desc">${c.desc}</div>
+        <div class="status ${c.near?'near':'far'}">${c.near?'Nearby':'Reachable'}</div>
+      </div>
+      <button class="connect-btn ${connected?'connected':''}" onclick="toggleConnect(${i})">${connected?'Connected':'Connect'}</button>
+    </div>`;
+  }).join('');
+}
+
+function toggleConnect(i){
+  connections[i] = !connections[i];
+  if(connections[i]) showToast('Connected to '+demoCircles[i].name+' (demo)');
+  renderCircles();
+}
+
+// ---------- Init ----------
+renderCircles();
+renderEntries();
+</script>
+</body>
+</html>
