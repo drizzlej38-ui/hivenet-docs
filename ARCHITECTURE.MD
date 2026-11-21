@@ -307,6 +307,26 @@ Full transparency layer:
 
 ---
 
+### 5.8 Model Artifact Integrity and Weight-Space Security
+
+Model weights, checkpoints, adapters, quantized variants, and related artifacts are part of HiveNet's security boundary. Weight-space programming research demonstrates that direct parameter inspection and modification can have security consequences, including backdoor insertion in controlled experiments. Therefore, model-artifact security is a required research and design domain for any node that admits or modifies model artifacts.
+
+Baseline requirements proposed for implementation:
+- **No unverified admission:** externally sourced or modified artifacts remain in quarantine until owner-authorized review is complete.
+- **Provenance:** record source, version, artifact digests, signatures where available, transformations, custody, and approvals.
+- **Integrity is not safety:** a hash verifies byte identity against a trusted digest; it does not prove benign behavior.
+- **Independent behavioral testing:** combine artifact inspection with isolated behavioral tests; weight-only inspection is not sufficient.
+- **Independent verification:** the model that edits or packages an artifact cannot be its sole certifier.
+- **Runtime binding:** verify that the artifact loaded for execution is the exact artifact admitted.
+- **Quarantine and rollback:** detect post-admission changes and require owner-authorized disposition.
+- **Human authority:** no model or remote coordinator may silently modify, admit, replace, or revoke an owner's model artifacts.
+
+These requirements are proposed and are not claims of current implementation. See [WEIGHT_SPACE_SECURITY.md](WEIGHT_SPACE_SECURITY.md) and [HIVENET-RS-WSP-001](https://github.com/drizzlej38-ui/Hivenet-research/blob/main/research/weight-space-security/HIVENET-RS-WSP-001_WEIGHT_SPACE_SECURITY.md).
+
+### 5.9 Adversarial Distillation and Capability Extraction
+
+HiveNet must also account for capability transfer through model outputs, protected reasoning, judgments, and tool interactions. This threat is distinct from direct weight-space modification. Data classes, recipients, session context, and sharing permissions must be explicit; sensitive context must not be forwarded across model/provider boundaries by default. Security telemetry must not collect user semantic content by default. See [HIVENET-RS-ADR-001](https://github.com/drizzlej38-ui/Hivenet-research/blob/main/papers/HIVENET-RS-ADR-001_ADVERSARIAL_DISTILLATION_AND_SOVEREIGN_SECURITY.md).
+
 ## 6. Model Interface Standard
 
 Every model that connects to HiveNet must implement this interface. This ensures replaceability and consistent behavior.
