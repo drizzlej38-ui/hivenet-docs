@@ -8,6 +8,15 @@ HiveNet distributed sovereignty infrastructure - documentation and architecture
 
 # HiveNet — Distributed Sovereignty Infrastructure
 
+## Adopted architectural principle
+
+**An ecosystem within itself, yet still a participant.**
+
+**Autonomous by nature. Cooperative by design. Interoperable by choice.**
+
+HiveNet is intended to be internally coherent and independently useful while remaining an active participant in the wider technical ecosystem. It may cooperate with external tools, providers, protocols, and research platforms through explicit, bounded, replaceable interfaces. Interoperability does not imply membership, trust, authorization, or transfer of authority. See [Cooperative Interoperability Principle](COOPERATIVE_INTEROPERABILITY_PRINCIPLE.md) for the full statement.
+
+
 ## Contribution Policy
 
 This project is built on radical principles of sovereignty, independence, and resistance to centralized control. 

@@ -16,6 +16,22 @@ This is the line: **selective disclosure to peers = sovereignty. Opacity to your
 
 ---
 
+## 1. Cooperative Interoperability
+
+HiveNet is **an ecosystem within itself, yet still a participant** in the wider technical ecosystem.
+
+**Autonomous by nature. Cooperative by design. Interoperable by choice.**
+
+A HiveNode may operate core local functions independently while using a Gateway or another explicitly authorized interface to cooperate with external systems. External services do not become HiveNet nodes merely by exchanging messages or providing a service. Likewise, HiveNet membership does not grant blanket access to node-local resources.
+
+Cross-boundary communication MUST be scoped, authenticated, authorized by the relevant owner or custodian policy, and auditable at the level appropriate to the data and operation. Compatibility or connectivity MUST NOT be treated as proof of trust or permission. Gateways SHOULD minimize disclosure, expose only the capabilities required for the authorized exchange, and provide clear revocation and failure behavior.
+
+External providers and integrations SHOULD be replaceable where practical. Loss or withdrawal of an external service SHOULD NOT disable unrelated local node functions. Any unavoidable external dependency MUST be documented.
+
+Interoperability is not subordination, and internal autonomy is not isolation. This section states an architectural requirement; implementation and conformance evidence remain necessary.
+
+---
+
 ## 1. Node Architecture
 
 ```
